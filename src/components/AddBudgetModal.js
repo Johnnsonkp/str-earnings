@@ -10,11 +10,10 @@ export default function AddBudgetModal({ show, handleClose }) {
   const { addBudget } = useBudgets();
   function handleSubmit(e) {
     e.preventDefault();
-    console.log("catRef", catRef.current.value, maxRef.current.value);
     addBudget({
       name: nameRef.current.value,
       max: parseFloat(maxRef.current.value),
-      category: nameRef.current.value,
+      category: catRef.current.value,
     });
     handleClose();
   }
