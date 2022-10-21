@@ -23,12 +23,12 @@ export const BudgetsProvider = ({ children }) => {
       return [...prevExpenses, { id: uuidV4(), description, amount, budgetId }];
     });
   }
-  function addBudget({ name, max }) {
+  function addBudget({ name, max, category }) {
     setBudgets((prevBudgets) => {
       if (prevBudgets.find((budget) => budget.name === name)) {
         return prevBudgets;
       }
-      return [...prevBudgets, { id: uuidV4(), name, max }];
+      return [...prevBudgets, { id: uuidV4(), name, max, category }];
     });
   }
   function deleteBudget({ id }) {

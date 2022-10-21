@@ -6,12 +6,15 @@ import { useRef } from "react";
 export default function AddBudgetModal({ show, handleClose }) {
   const nameRef = useRef();
   const maxRef = useRef();
+  const catRef = useRef();
   const { addBudget } = useBudgets();
   function handleSubmit(e) {
     e.preventDefault();
+    console.log("catRef", catRef.current.value, maxRef.current.value);
     addBudget({
       name: nameRef.current.value,
       max: parseFloat(maxRef.current.value),
+      category: nameRef.current.value,
     });
     handleClose();
   }
@@ -27,6 +30,15 @@ export default function AddBudgetModal({ show, handleClose }) {
             <Form.Label>Name</Form.Label>
             <Form.Control ref={nameRef} type="text" required />
           </Form.Group>
+
+          <Form.Group className="mb-3" controlId="name">
+            <Form.Label>Category</Form.Label>
+            <Form.Select aria-label="Default select example" ref={catRef}>
+              <option>Property</option>
+              <option value="1">Expense</option>
+            </Form.Select>
+          </Form.Group>
+
           <Form.Group className="mb-3" controlId="max">
             <Form.Label>Maximum Spending</Form.Label>
             <Form.Control

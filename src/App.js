@@ -8,6 +8,7 @@ import AddBudgetModal from "./components/AddBudgetModal";
 import AddExpenseModal from "./components/AddExpenseModal";
 import BudgetCard from "./components/BudgetCard";
 import Container from "react-bootstrap/Container";
+import ProfitTotals from "./components/ProfitTotals";
 import TotalBudgetCard from "./components/TotalBudgetCard";
 import UncategorizedBudgetCard from "./components/UncategorizedBudgetCard";
 import ViewExpensesModal from "./components/ViewExpensesModal";
@@ -20,6 +21,7 @@ function App() {
   const { budgets, getBudgetExpenses, expenses } = useBudgets();
   const [toggle, setToggle] = useState(false);
   const propertyCount = [];
+  const expenseCount = [];
 
   function openAddExpenseModal(budgetId) {
     setShowAddExpenseModal(true);
@@ -36,8 +38,7 @@ function App() {
     if (ratio < 0.75) return "#0d6efd";
     if (ratio > 0.75) return "rgb(0, 200, 117)";
   }
-  // budgets = expense;
-  // expenses = earnings;
+
   return (
     <div
       className="default-background"
@@ -75,6 +76,7 @@ function App() {
               >
                 Add Expense
               </Button>
+              <hr style={{ opacity: "0.1" }}></hr>
               <Button variant="success" onClick={openAddExpenseModal}>
                 Add Earnings
               </Button>
@@ -96,12 +98,22 @@ function App() {
               border: `3px solid ${TotalBorderOutlineColour(amount, max)}`,
               borderRadius: "25px",
               padding: "4px",
-              marginBottom: "30px",
+              marginBottom: "0px",
             }}
           >
             <TotalBudgetCard />
           </div>
-          <hr style={{ opacity: "0.1" }}></hr>
+          <div
+            style={{
+              border: `3px solid ${TotalBorderOutlineColour(amount, max)}`,
+              borderRadius: "25px",
+              padding: "4px",
+              marginBottom: "30px",
+            }}
+          >
+            <ProfitTotals />
+          </div>
+          {/* <hr style={{ opacity: "0.1" }}></hr> */}
           <div
             style={{
               display: "flex",
@@ -117,7 +129,9 @@ function App() {
             >
               Properties:
               {budgets.forEach((property) => {
-                propertyCount.push(property.id);
+                if (!property.category || property.category === "property") {
+                  propertyCount.push(property.id);
+                }
               })}
               <span
                 style={{
@@ -136,11 +150,10 @@ function App() {
               Toggle View
             </ToggleButton>
           </div>
+          <hr style={{ opacity: "0.1" }}></hr>
           <div
             style={{
               display: toggle ? "flex" : "",
-              // justifyContent: "space-between",
-              // alignItems: "space-between",
               flexWrap: "wrap",
               justifyContent: "space-between",
               alignItems: "flex-start",
@@ -151,7 +164,8 @@ function App() {
                 (total, expense) => total + expense.amount,
                 0
               );
-              return (
+
+              return !budget.category || budget.category === "property" ? (
                 <BudgetCard
                   key={budget.id}
                   name={budget.name}
@@ -163,10 +177,88 @@ function App() {
                   onViewExpensesClick={() =>
                     setViewExpensesModalBudgetId(budget.id)
                   }
+                  category={budget.category ? budget.category : ""}
                 />
-              );
+              ) : null;
             })}
           </div>
+
+          {/* Budget expense  */}
+          {/* <hr style={{ opacity: "0.1" }}></hr> */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              marginTop: "0px",
+            }}
+          >
+            <h5
+              style={{
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              Expenses:
+              {budgets.forEach((expense) => {
+                if (
+                  expense.category
+                    ? expense.category || expense.category === "expense"
+                    : false
+                ) {
+                  expenseCount.push(expense.id);
+                }
+              })}
+              <span
+                style={{
+                  alignItems: "center",
+                  marginLeft: "5px",
+                }}
+              >
+                {expenseCount.length}
+              </span>
+            </h5>
+
+            <ToggleButton
+              variant="secondary"
+              checked
+              onClick={() => setToggle(!toggle)}
+            >
+              Toggle View
+            </ToggleButton>
+          </div>
+          <hr style={{ opacity: "0.1" }}></hr>
+          <div
+            style={{
+              display: toggle ? "flex" : "",
+              flexWrap: "wrap",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+            }}
+          >
+            {budgets.map((budget) => {
+              const amount = getBudgetExpenses(budget.id).reduce(
+                (total, expense) => total + expense.amount,
+                0
+              );
+
+              return budget.category || budget.category === "expense" ? (
+                <BudgetCard
+                  key={budget.id}
+                  name={budget.name}
+                  gray
+                  toggle={toggle}
+                  amount={amount}
+                  max={budget.max}
+                  onAddExpenseClick={() => openAddExpenseModal(budget.id)}
+                  onViewExpensesClick={() =>
+                    setViewExpensesModalBudgetId(budget.id)
+                  }
+                  category={budget.category ? budget.category : ""}
+                />
+              ) : null;
+            })}
+          </div>
+
           <UncategorizedBudgetCard
             onAddExpenseClick={openAddExpenseModal}
             onViewExpensesClick={() =>

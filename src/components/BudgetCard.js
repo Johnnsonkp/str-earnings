@@ -16,11 +16,11 @@ export default function BudgetCard({
   onViewExpensesClick,
   totalMargin,
   totalTitle,
+  totalProfit,
   totalCurrencyFontSize,
 }) {
   const classNames = [];
-  if (amount > max && totalTitle) {
-    // classNames.push("bg-success", "bg-opacity-10");
+  if ((amount > max && totalTitle) || totalProfit) {
     classNames.push("success-background", "card-style");
   } else if (gray) {
     classNames.push("light-white", "bg-opacity-10");
@@ -40,7 +40,7 @@ export default function BudgetCard({
             className={`d-flex align-items-baseline ${totalCurrencyFontSize}`}
           >
             {currencyFormatter.format(amount)}
-            {max && (
+            {max && !totalProfit && (
               <span className={`text-muted fs-6 ms-1`}>
                 / {currencyFormatter.format(max)}
               </span>
@@ -78,6 +78,7 @@ export default function BudgetCard({
           </Stack>
         )}
         {hideButtons &&
+          !totalProfit &&
           budgets.map((budget) => {
             const amount = getBudgetExpenses(budget.id).reduce(
               (total, expense) => total + expense.amount,
@@ -85,18 +86,24 @@ export default function BudgetCard({
             );
             return (
               <>
-                <Button
-                  variant="outline-secondary"
-                  style={{
-                    marginTop: "25px",
-                    marginBottom: "30px",
-                    marginRight: "10px",
-                    fontSize: "12px",
-                  }}
-                >
-                  {budget.name.slice(0, 20)} -{" "}
-                  <span style={{ padding: "3px" }}>${amount}</span>
-                </Button>
+                {amount > 0 && (
+                  <Button
+                    variant={`${
+                      amount > budget.max ? "outline-success" : "outline-danger"
+                    }`}
+                    style={{
+                      marginTop: "25px",
+                      marginBottom: "30px",
+                      marginRight: "10px",
+                      fontSize: "12px",
+                    }}
+                  >
+                    {budget.name.slice(0, 20)} -{" "}
+                    <span style={{ padding: "3px" }}>
+                      ${Math.floor(amount)}
+                    </span>
+                  </Button>
+                )}
               </>
             );
           })}

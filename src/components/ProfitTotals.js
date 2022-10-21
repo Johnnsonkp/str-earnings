@@ -1,7 +1,7 @@
 import BudgetCard from "./BudgetCard";
 import { useBudgets } from "../contexts/BudgetsContext";
 
-export default function TotalBudgetCard() {
+export default function ProfitTotals() {
   const { expenses, budgets } = useBudgets();
   const amount = expenses.reduce((total, expense) => total + expense.amount, 0);
   const max = budgets.reduce((total, budget) => total + budget.max, 0);
@@ -12,15 +12,15 @@ export default function TotalBudgetCard() {
 
   return (
     <BudgetCard
-      amount={amount}
-      name={`${CurrentMonth} Total Earnings Percentage [ ${Math.floor(
+      amount={amount - max}
+      name={`${CurrentMonth} Total Profits [ ${Math.floor(
         (amount / max) * 100
       )}% ]`}
       gray
       max={max}
       hideButtons
       totalMargin={"mb-3"}
-      totalTitle={"30px"}
+      totalProfit={"30px"}
       totalCurrencyFontSize={"fs-4"}
     />
   );
